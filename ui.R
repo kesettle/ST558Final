@@ -1,6 +1,8 @@
+library(shiny)
 library(shinydashboard)
 library(tidyverse)
-
+library(caret)
+##Include herpetology dataset##
 
 dashboardPage(skin="green",
               #title
@@ -36,10 +38,11 @@ dashboardPage(skin="green",
                                    #box to contain description
                                    box(background="green",width=12,
                                        h4("The data is about ___. It's from ___. More info can be found at the following:")
+                                       )
                                    )
-                            )
-                          ),
+                            ),
                           fluidRow(tags$hr()),
+                          #Image(s) related to data
                           fluidRow(
                             column(6,
                                    #Purposes of each tab
@@ -48,16 +51,17 @@ dashboardPage(skin="green",
                                    box(background="green",width=12,
                                        h4("The app has the following tabs, with the purpose of each tab listed beside it:")
                                    )
-                          ),
-                          column(6,
-                                 #Image related to data
-                                 align = "center",
-                                 img(src="Upton_1-768x538.jpg",
-                                     width = 500)
-                                 )
-                          )
+                            ),
+                            column(6,
+                                   #Purposes of each tab
+                                   align = "center",
+                                   img(src="amphibianCollage.jpg",
+                                       width = 600)
+                                   )
+                            )
                   ),
                   
+          ########EDIT HERE AND SERVER########
                   #actual app layout      
                   tabItem(tabName = "app",
                           fluidRow(

@@ -1,6 +1,7 @@
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
+library(caret)
 
 shinyServer(function(input, output) {
   
