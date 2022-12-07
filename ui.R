@@ -2,7 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(tidyverse)
 library(caret)
-##Include herpetology dataset##
+##Insert amphibians dataset##
 
 dashboardPage(skin="green",
               #title
@@ -29,7 +29,7 @@ dashboardPage(skin="green",
                                    h1("Purpose"),
                                    #box to contain description
                                    box(background="green",width=12,
-                                       h4("The purpose of this application is _____")
+                                       h4("The purpose of this application is to explore and model data collected on amphibians in Poland.")
                                    )
                             ),
                             column(6,
