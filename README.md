@@ -8,7 +8,11 @@
 
 *packages required and code to install/load them*
 
-The following packages are used to run the app: - `shiny` - `shinydashboard` - `tidyverse` - `caret`
+The following packages are used to run the app: 
+- `shiny`
+- `shinydashboard`
+- `tidyverse`
+- `caret`
 
 Use the following code to install the packages:
 
