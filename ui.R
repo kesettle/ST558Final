@@ -2,8 +2,6 @@ library(shiny)
 library(shinydashboard)
 library(tidyverse)
 library(caret)
-##amphibians dataset
-amph <- read.csv2("amphibians.csv", skip = 1)
 
 dashboardPage(skin="green",
               #title
