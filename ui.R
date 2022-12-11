@@ -1,11 +1,13 @@
 library(shiny)
 library(shinydashboard)
-library(DT)       #for displaying data tables
-library(tidyverse)#for data manipulation, graphing, and diamonds data
-library(corrplot) #for correlation plots
-library(caret)    #for modeling
-library(HSAUR3)   #for pottery data
-library(faraway)  #for kanga data
+library(DT)           #for displaying data tables
+library(tidyverse)    #for data manipulation, graphing, and diamonds data
+library(corrplot)     #for correlation plots
+library(caret)        #for modeling multiple/generalized linear models
+library(tree)         #for modeling regression/classification trees
+library(randomForest) #for modeling random forest models
+library(HSAUR3)       #for pottery data
+library(faraway)      #for kanga data
 #load datasets
 data("diamonds")
 data("pottery", package = "HSAUR3")
@@ -482,7 +484,7 @@ dashboardPage(skin="green",
                                               h3("Directions"),
                                               box(background="green",width=12, 
                                                   h4("Before fitting models, select the proportion of data you wish to use for training the models. You are allowed a minimum of 50%, and a maximum of 85%. The default is set at 70%."),
-                                                  h4("For each model, select the predictors you wish to use. Once you have chosen your predictor variables for a given model, press the 'Fit model' button to display a summary of the model, as well as fit criteria. Please note that you must choose at least one variable, as not choosing any variable will result in an error.")))),
+                                                  h4("For each model, select the predictors you wish to use. Once you have chosen your predictor variables for a given model, a summary of the model will be displayed, as well as fit criteria. Please note that you must choose at least one variable, as not choosing any variable will result in an error.")))),
                                      fluidRow(
                                        column(12,
                                               box(background="green",width=12,
@@ -509,10 +511,7 @@ dashboardPage(skin="green",
                                                                 "depth",
                                                                 "table")
                                                   ),
-                                                  actionButton("gemMLRFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
+                                                  verbatimTextOutput("gemMLR"))),
                                        column(4,
                                               h3("Regression Tree"),
                                               box(background="green",width=12, 
@@ -529,10 +528,7 @@ dashboardPage(skin="green",
                                                                 "depth",
                                                                 "table")
                                                   ),
-                                                  actionButton("gemTreeFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
+                                                  verbatimTextOutput("gemTree"))),
                                        column(4,
                                               h3("Random Forest"),
                                               box(background="green",width=12, 
@@ -549,10 +545,7 @@ dashboardPage(skin="green",
                                                                 "depth",
                                                                 "table")
                                                   ),
-                                                  actionButton("gemForestFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)")))),
+                                                  verbatimTextOutput("gemRand")))),
                                      fluidRow(
                                        column(2),
                                        column(8, box(background="green",width=12, 
@@ -593,10 +586,7 @@ dashboardPage(skin="green",
                                                                 "MnO",
                                                                 "BaO")
                                                   ),
-                                                  actionButton("potGLRFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
+                                                  verbatimTextOutput("potGLR"))),
                                        column(4,
                                               h3("Classification Tree"),
                                               box(background="green",width=12, 
@@ -613,10 +603,7 @@ dashboardPage(skin="green",
                                                                 "MnO",
                                                                 "BaO")
                                                   ),
-                                                  actionButton("potTreeFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
+                                                  verbatimTextOutput("potTree"))),
                                        column(4,
                                               h3("Random Forest"),
                                               box(background="green",width=12, 
@@ -633,10 +620,7 @@ dashboardPage(skin="green",
                                                                 "MnO",
                                                                 "BaO")
                                                   ),
-                                                  actionButton("potForestFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)")))),
+                                                  verbatimTextOutput("potRand")))),
                                      fluidRow(
                                        column(2),
                                        column(8, box(background="green",width=12, 
@@ -687,10 +671,7 @@ dashboardPage(skin="green",
                                                                 "mandible.depth",
                                                                 "ramus.height")
                                                   ),
-                                                  actionButton("rooGLRFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
+                                                  verbatimTextOutput("rooGLR"))),
                                        column(4,
                                               h3("Classification Tree"),
                                               box(background="green",width=12, 
@@ -717,10 +698,7 @@ dashboardPage(skin="green",
                                                                 "mandible.depth",
                                                                 "ramus.height")
                                                   ),
-                                                  actionButton("rooTreeFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
+                                                  verbatimTextOutput("rooTree"))),
                                        column(4,
                                               h3("Random Forest"),
                                               box(background="green",width=12, 
@@ -747,10 +725,7 @@ dashboardPage(skin="green",
                                                                 "mandible.depth",
                                                                 "ramus.height")
                                                   ),
-                                                  actionButton("rooForestFit",
-                                                               "Fit model"),
-                                                  h4("[model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)")))),
+                                                  verbatimTextOutput("rooRand")))),
                                      fluidRow(
                                        column(2),
                                        column(8, box(background="green",width=12, 

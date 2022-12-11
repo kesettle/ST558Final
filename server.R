@@ -1,11 +1,14 @@
 library(shiny)
 library(shinydashboard)
-library(DT)       #for displaying data tables
-library(tidyverse)#for data manipulation, graphing, and diamonds data
-library(corrplot) #for correlation plots
-library(caret)    #for modeling
-library(HSAUR3)   #for pottery data
-library(faraway)  #for kanga data
+library(DT)           #for displaying data tables
+library(tidyverse)    #for data manipulation, graphing, and diamonds data
+library(corrplot)     #for correlation plots
+library(caret)        #for modeling multiple linear models and predicting with test data
+library(nnet)         #for modeling generalized linear models with multiple predictor levels
+library(tree)         #for modeling regression/classification trees
+library(randomForest) #for modeling random forest models
+library(HSAUR3)       #for pottery data
+library(faraway)      #for kanga data
 #load datasets
 data("diamonds")
 data("pottery", package = "HSAUR3")
@@ -16,17 +19,17 @@ roo <- na.omit(kanga)
 shinyServer(function(input, output, session) {
   
   ##### Diamonds #####
-  #Numerical Var summaries
+  ## Numerical Var summaries
   output$gemStats <- renderPrint({
     as.table(summary(diamonds[,input$gemNum]))
   })
   
-  #Categorical Var Summaries
+  ## Categorical Var Summaries
   output$gemLevels <-renderTable({
     table(diamonds[,input$gemCat])
   })
   
-  #Graphs
+  ## Graphs
   output$gemPlot <- renderPlot({
   #base plot
     gem <- ggplot(diamonds)
@@ -205,7 +208,77 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  #
+  ## Model Fitting
+  #MLR
+  output$gemMLR <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(diamonds), size = nrow(diamonds)*input$gemTrain)
+    gemTrainDat <- diamonds[train,]
+    gemTestDat <- diamonds[-train,]
+    
+    #fit
+    lmod <- train(reformulate(input$gemMLRVars, "price"),
+                  data=gemTrainDat,
+                  method = "lm",
+                  trControl = trainControl("cv",number=10))
+    #predict
+    lmodPred <- predict(lmod, newdata = gemTestDat)
+    
+    #output
+    list(
+      "Model_Summary"=summary(lmod),
+      "RMSE"=RMSE(lmodPred, gemTestDat$price))
+  })
+
+  #Regression Tree
+  output$gemTree <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(diamonds), size = nrow(diamonds)*input$gemTrain)
+    gemTrainDat <- diamonds[train,]
+    gemTestDat <- diamonds[-train,]
+    
+    #fit
+    treemod <- tree(reformulate(input$gemTreeVars, "price"),
+                    data = gemTrainDat)
+    #predict
+    treePred <- predict(treemod, newdata = gemTestDat)
+    
+    #output
+    list(
+      "Model_Summary"=summary(treemod),
+      "RMSE"=sqrt(mean((treePred-gemTestDat$price)^2)))
+  })
+  
+  #Random Forest
+  output$gemRand <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(diamonds), size = nrow(diamonds)*input$gemTrain)
+    gemTrainDat <- diamonds[train,]
+    gemTestDat <- diamonds[-train,]
+    
+    #fit
+    rfmod <- randomForest(reformulate(input$gemForestVars, "price"), 
+                          data = gemTrainDat, 
+                          mtry = 1,
+                          ntree = 100, 
+                          importance = TRUE)
+    #predict
+    rfPred <- predict(rfmod, newdata = gemTestDat)
+    
+    #output
+    list(
+      "Model_Summary"=rfmod,
+      "RMSE"=RMSE(rfPred, gemTestDat$price))
+  })
+  
+  
+  
   
   
   
@@ -342,6 +415,87 @@ shinyServer(function(input, output, session) {
         pot+geom_histogram(aes(BaO, fill=kiln))}
     }
   })
+  
+  ## Model Fitting
+  #GLR
+  output$potGLR <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(pottery), size = nrow(pottery)*input$potTrain)
+    potTrainDat <- pottery[train,]
+    potTestDat <- pottery[-train,]
+    
+    #fit
+    lmod <- multinom(reformulate(input$potGLRVars, "kiln"),
+                     data=potTrainDat)
+    #predict
+    lmodPred <- predict(lmod, newdata = potTestDat)
+    
+    #classification rate
+    class <- table(potTestDat$kiln, lmodPred)
+    misclassRate <- 1-(sum(diag(class))/sum(class))
+    
+    #output
+    list(
+      "Model_Summary"=summary(lmod),
+      "Classification"=class,
+      "Missclassification_Error_Rate"= misclassRate)
+  })
+  
+  #Classification Tree
+  output$potTree <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(pottery), size = nrow(pottery)*input$potTrain)
+    potTrainDat <- pottery[train,]
+    potTestDat <- pottery[-train,]
+    
+    #fit
+    treemod <- tree(reformulate(input$potTreeVars, "kiln"),
+                    data = potTrainDat)
+    #predict
+    treePred <- predict(treemod, newdata = potTestDat)
+    
+    #output
+    list(
+      "Model_Summary"=summary(treemod))
+  })
+  
+  #Random Forest
+  output$potRand <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(pottery), size = nrow(pottery)*input$potTrain)
+    potTrainDat <- pottery[train,]
+    potTestDat <- pottery[-train,]
+    
+    #fit
+    rfmod <- randomForest(reformulate(input$potForestVars, "kiln"), 
+                          data = potTrainDat, 
+                          mtry = 1,
+                          ntree = 100, 
+                          importance = TRUE)
+    #predict
+    rfPred <- predict(rfmod, newdata = potTestDat)
+    
+    #classification rate
+    class <- table(potTestDat$kiln, rfPred)
+    missclassRate <- 1-(sum(diag(class))/sum(class))
+    
+    #output
+    list(
+      "Model_Summary"=summary(rfmod),
+      "Classification"=class,
+      "Missclassification_Error_Rate"=missclassRate
+    )
+  })
+  
+  
+  
+  
   
   
   
@@ -711,9 +865,85 @@ shinyServer(function(input, output, session) {
       else if(input$opt=="species"){
         kan+geom_point(aes(mandible.width, mandible.depth, color=species))}
     }
+  })
+
+  ## Model Fitting
+  #GLR
+  output$rooGLR <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(roo), size = nrow(roo)*input$rooTrain)
+    rooTrainDat <- roo[train,]
+    rooTestDat <- roo[-train,]
     
+    #fit
+    lmod <- multinom(reformulate(input$rooGLRVars, "species"),
+                     data=rooTrainDat)
+    #predict
+    lmodPred <- predict(lmod, newdata = rooTestDat)
+    
+    #classification rate
+    class <- table(rooTestDat$species, lmodPred)
+    misclassRate <- 1-(sum(diag(class))/sum(class))
+    
+    #output
+    list(
+      "Model_Summary"=summary(lmod),
+      "Classification"=class,
+      "Missclassification_Error_Rate"= misclassRate)
   })
   
-
+  #Classification Tree
+  output$rooTree <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(roo), size = nrow(roo)*input$rooTrain)
+    rooTrainDat <- roo[train,]
+    rooTestDat <- roo[-train,]
+    
+    #fit
+    treemod <- tree(reformulate(input$rooTreeVars, "species"),
+                    data = rooTrainDat)
+    #predict
+    treePred <- predict(treemod, newdata = rooTestDat)
+    
+    #output
+    list(
+      "Model_Summary"=summary(treemod))
+  })
+  
+  #Random Forest
+  output$rooRand <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    #Training/Testing Data
+    train <- sample(1:nrow(roo), size = nrow(roo)*input$rooTrain)
+    rooTrainDat <- roo[train,]
+    rooTestDat <- roo[-train,]
+    
+    #fit
+    rfmod <- randomForest(reformulate(input$rooForestVars, "species"), 
+                          data = rooTrainDat, 
+                          mtry = 1,
+                          ntree = 100, 
+                          importance = TRUE)
+    #predict
+    rfPred <- predict(rfmod, newdata = rooTestDat)
+    
+    #classification rate
+    class <- table(potTestDat$kiln, rfPred)
+    missclassRate <- 1-(sum(diag(class))/sum(class))
+    
+    #output
+    list(
+      "Model_Summary"=summary(rfmod),
+      "Classification"=class,
+      "Missclassification_Error_Rate"=missclassRate
+    )
+  })
+  
+  
   
 })
