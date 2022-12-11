@@ -1,16 +1,17 @@
 library(shiny)
 library(shinydashboard)
-library(DT)
+library(DT)       #for displaying data tables
 library(tidyverse)#for data manipulation, graphing, and diamonds data
+library(corrplot) #for correlation plots
 library(caret)    #for modeling
 library(HSAUR3)   #for pottery data
 library(faraway)  #for kanga data
-library(Lahman)   #for batting data
 #load datasets
 data("diamonds")
 data("pottery", package = "HSAUR3")
 data("kanga")
-data("Batting")
+roo <- na.omit(kanga)
+
 
 dashboardPage(skin="green",
               #title
@@ -38,7 +39,7 @@ dashboardPage(skin="green",
                                    #Purpose of the app
                                    h1("Purpose"),
                                    box(background="green",width=12,
-                                       h4("The purpose of this application is to explore and model four different data sets depending on the user's choice.")),
+                                       h4("The purpose of this application is to explore and model three different data sets depending on the user's choice.")),
                                    #Purposes of each tab
                                    h1("Layout"),
                                    #box to contain description
@@ -57,41 +58,34 @@ dashboardPage(skin="green",
                                    #Info on the data with related picture
                                    h1("About the Datasets"),
                                    fluidRow(
-                                     column(3,
+                                     column(4,
                                             align = "center",
                                             box(background="green",width=12,
                                                 h2("Diamonds"),
                                                 h4("Found in the ", code("ggplot2"), " package, this data set includes prices and other attributes of almost 54,000 daimonds. More information about the data can be found ", strong(a(href="https://ggplot2.tidyverse.org/reference/diamonds.html", "here.", style = "color:pink"))),
                                                 img(src="diamond.jpg", width = 200))),
-                                     column(3,
+                                     column(4,
                                             align = "center",
                                             box(background="green",width=12,
                                                 h2("Pottery"),
                                                 h4("Found in the ", code("HSAUR3"), " package, this data set includes chemical compositions of Romano-British pottery. More information about the data can be found ", strong(a(href="https://cran.r-project.org/web/packages/HSAUR3/HSAUR3.pdf", "here.", style = "color:pink"))),
                                                 img(src="pottery.jpg", width = 200))),
-                                     column(3,
+                                     column(4,
                                             align = "center",
                                             box(background="green",width=12,
                                                 h2("Kanga"),
-                                                h4("Found in the ", code("faraway"), " package, this data set includes skull measurements of different species of kangaroo. More information about the data can be found ", strong(a(href="https://www.rdocumentation.org/packages/faraway/versions/1.0.8/topics/kanga", "here.", style = "color:pink"))),
-                                                img(src="kanga.jpg", width = 200))),
-                                     column(3,
-                                            align = "center",
-                                            box(background="green",width=12,
-                                                h2("Batting"),
-                                                h4("Found in the ", code("Lahman"), " package, this data set includes batting, pitching, and fielding statistics from 1871 to 2021. More information about the data can be found ", strong(a(href="https://www.seanlahman.com/baseball-archive/statistics/", "here.", style = "color:pink"))),
-                                                img(src="batting.jpg", width = 200))))
+                                                h4("Found in the ", code("faraway"), " package, this data set includes skull measurements of different species of kangaroo. Observations with missing values have been omitted here. More information about the data can be found ", strong(a(href="https://www.rdocumentation.org/packages/faraway/versions/1.0.8/topics/kanga", "here.", style = "color:pink"))),
+                                                img(src="kanga.jpg", width = 200))))
                                    )
                           )
                   ),
+                  
                   tabItem(tabName = "eda",
                           tabsetPanel(
                             ##Tab: Diamonds data EDA##
                             tabPanel("Diamonds",
                                      fluidRow(
-                                       column(12,
-                                              h2("Exploratory Data Analysis"),
-                                              box(background="green",width=12, h4("_About EDA_")))),
+                                       column(12, h2("Exploratory Data Analysis"))),
                                      fluidRow(
                                        column(3,
                                               box(background="green",width=12,
@@ -104,30 +98,106 @@ dashboardPage(skin="green",
                                                                 "Width (y)"="y",
                                                                 "Depth (z)"="z",
                                                                 "Depth percentage (depth)"="depth",
-                                                                "Top width relative to widest point (table)"="table"))),
-                                              box(background="green",width=12,
-                                                  h3("[Numerical Var summaries here]")),
-                                              box(background="green",width=12, 
+                                                                "Top width relative to widest point (table)"="table")),
+                                                  h5(strong("Summary Stats")),
+                                                  verbatimTextOutput("gemStats"), 
                                                   selectInput(
                                                     "gemCat",
                                                     "Categorical Variables",
                                                     choices = c("Cut"="cut",
                                                                 "Color"="color",
-                                                                "Clarity"="clarity"))),
-                                              box(background="green",width=12, 
-                                                  h3("[Categorical Var summaries here]"))),
+                                                                "Clarity"="clarity")), 
+                                                  h5(strong("Levels and Counts")),
+                                                  tableOutput("gemLevels"))),
                                        column(9,
                                               box(background="green",width=12,
-                                                  h3("[graph selection]")),
+                                                  selectInput(
+                                                    "gemGraphs",
+                                                    "Graph Selection",
+                                                    #cut, color, clarity opts for boxplots, scatterplots
+                                                    choices = c("Correlation Plot"="corrMap",
+                                                                "Price Boxplot"="priceBox",
+                                                                "Carat Boxplot"="carBox",  
+                                                                "Length Boxplot"="xBox",
+                                                                "Width Boxplot"="yBox",
+                                                                "Depth Boxplot"="zBox",
+                                                                "Cut Barplot"="cutBar",      #color, clarity opts
+                                                                "Color Barplot"="colBar",    #cut, clarity opts
+                                                                "Clarity Barplot"="clrBar",  #cut, color opts
+                                                                "Length by Width Scatterplot"="xyScat",
+                                                                "Length by Depth Scatterplot"="xzScat",
+                                                                "Width by Depth Scatterplot"="yzScat",
+                                                                "Depth by Depth % Scatterplot"="zdepthScat",
+                                                                "Width by Width % Scatterplot"="ytableScat",
+                                                                "Carat by Price Scatterplot"="carpriceScat",
+                                                                "Length by Price Scatterplot"="xpriceScat",
+                                                                "Width by Price Scatterplot"="ypriceScat",
+                                                                "Depth by Price Scatterplot"="zpriceScat")
+                                                    ),
+                                                  conditionalPanel("input.gemGraphs == 'priceBox' ||
+                                                                   input.gemGraphs == 'carBox' ||
+                                                                   input.gemGraphs == 'xBox' ||
+                                                                   input.gemGraphs == 'yBox' ||
+                                                                   input.gemGraphs == 'zBox' ||
+                                                                   input.gemGraphs == 'xyScat' ||
+                                                                   input.gemGraphs == 'xzScat' ||
+                                                                   input.gemGraphs == 'yzScat' ||
+                                                                   input.gemGraphs == 'zdepthScat' ||
+                                                                   input.gemGraphs == 'ytableScat' ||
+                                                                   input.gemGraphs == 'carpriceScat' ||
+                                                                   input.gemGraphs == 'xpriceScat' ||
+                                                                   input.gemGraphs == 'ypriceScat' ||
+                                                                   input.gemGraphs == 'zpriceScat'",
+                                                                   radioButtons(
+                                                                     "gemBoxScat",
+                                                                     "Group by:",
+                                                                     choices = c("none",
+                                                                                 "cut",
+                                                                                 "color",
+                                                                                 "clarity"),
+                                                                     selected = "none",
+                                                                     inline = TRUE
+                                                                     )
+                                                                   ),
+                                                  conditionalPanel("input.gemGraphs == 'cutBar'",
+                                                                   radioButtons(
+                                                                     "gemCut",
+                                                                     "Group by:",
+                                                                     choices = c("color",
+                                                                                 "clarity",
+                                                                                 "neither"),
+                                                                     selected = "neither",
+                                                                     inline = TRUE
+                                                                   )),
+                                                  conditionalPanel("input.gemGraphs == 'colBar'",
+                                                                   radioButtons(
+                                                                     "gemCol",
+                                                                     "Group by:",
+                                                                     choices = c("cut",
+                                                                                 "clarity",
+                                                                                 "neither"),
+                                                                     selected = "neither",
+                                                                     inline = TRUE
+                                                                   )),
+                                                  conditionalPanel("input.gemGraphs == 'clrBar'",
+                                                                   radioButtons(
+                                                                     "gemClr",
+                                                                     "Group by:",
+                                                                     choices = c("cut",
+                                                                                 "color",
+                                                                                 "neither"),
+                                                                     selected = "neither",
+                                                                     inline = TRUE
+                                                                   ))
+                                                  ),
                                               box(background="green",width=12,
-                                                  h3("[Graph]"))))
+                                                  plotOutput("gemPlot"))))
                                      ),
+                            
                             ##Tab: Pottery data EDA##
                             tabPanel("Pottery",
                                      fluidRow(
-                                       column(12,
-                                              h2("Exploratory Data Analysis"),
-                                              box(background="green",width=12, h4("_About EDA_")))),
+                                       column(12, h2("Exploratory Data Analysis"))),
                                      fluidRow(
                                        column(3,
                                               box(background="green",width=12,
@@ -142,30 +212,77 @@ dashboardPage(skin="green",
                                                                 "Calium Oxide(K2O)"="K2O",
                                                                 "Titanium Oxide (TiO2)"="TiO2",
                                                                 "Mangan Oxide (MnO)"="MnO",
-                                                                "Barium Oxide (BaO)"="BaO"))),
-                                              box(background="green",width=12,
-                                                  h3("[Numerical Var summaries here]")),
-                                              box(background="green",width=12, 
+                                                                "Barium Oxide (BaO)"="BaO")),
+                                                  h5(strong("Summary Stats")),
+                                                  verbatimTextOutput("potStats"), 
                                                   selectInput(
                                                     "potCat",
                                                     "Categorical Variables",
-                                                    choices = c("Site found (kiln)"="kiln"))),
-                                              box(background="green",width=12, 
-                                                  h3("[Categorical Var summaries here]"))
+                                                    choices = c("Site found (kiln)"="kiln")), 
+                                                  h5(strong("Levels and Counts")),
+                                                  tableOutput("potLevels"))
                                               ),
                                        column(9,
                                               box(background="green",width=12,
-                                                  h3("[graph selection]")),
+                                                  selectInput(
+                                                    "potGraphs",
+                                                    "Graph Selection",
+                                                    #Kiln opts for boxplots, histograms
+                                                    choices = c("Correlation Plot"="corrMap",
+                                                                "Al2O3 Boxplot"="Al2O3Box",  
+                                                                "Fe2O3 Boxplot"="Fe2O3Box",
+                                                                "MgO Boxplot"="MgOBox",
+                                                                "CaO Boxplot"="CaOBox",
+                                                                "Na2O Boxplot"="Na2OBox",
+                                                                "K2O Boxplot"="K2OBox",
+                                                                "TiO2 Boxplot"="TiO2Box",
+                                                                "MnO Boxplot"="MnOBox",
+                                                                "BaO Boxplot"="BaOBox",
+                                                                "Al2O3 Histogram"="Al2O3Hist",  
+                                                                "Fe2O3 Histogram"="Fe2O3Hist",
+                                                                "MgO Histogram"="MgOHist",
+                                                                "CaO Histogram"="CaOHist",
+                                                                "Na2O Histogram"="Na2OHist",
+                                                                "K2O Histogram"="K2OHist",
+                                                                "TiO2 Histogram"="TiO2Hist",
+                                                                "MnO Histogram"="MnOHist",
+                                                                "BaO Histogram"="BaOHist")
+                                                    ),
+                                                  conditionalPanel("input.potGraphs == 'Al2O3Box' ||
+                                                                   input.potGraphs == 'Fe2O3Box' ||
+                                                                   input.potGraphs == 'MgOBox' ||
+                                                                   input.potGraphs == 'CaOBox' ||
+                                                                   input.potGraphs == 'Na2OBox' ||
+                                                                   input.potGraphs == 'K2OBox' ||
+                                                                   input.potGraphs == 'TiO2Box' ||
+                                                                   input.potGraphs == 'MnOBox' ||
+                                                                   input.potGraphs == 'BaOBox' ||
+                                                                   input.potGraphs == 'Al2O3Hist' ||
+                                                                   input.potGraphs == 'Fe2O3Hist' ||
+                                                                   input.potGraphs == 'MgOHist' ||
+                                                                   input.potGraphs == 'CaOHist' ||
+                                                                   input.potGraphs == 'Na2OHist' ||
+                                                                   input.potGraphs == 'K2OHist' ||
+                                                                   input.potGraphs == 'TiO2Hist' ||
+                                                                   input.potGraphs == 'MnOHist' ||
+                                                                   input.potGraphs == 'BaOHist'",
+                                                                   radioButtons(
+                                                                     "opt",
+                                                                     "Group by Kiln?",
+                                                                     choices = c("no",
+                                                                                 "yes"),
+                                                                     selected = "no",
+                                                                     inline = TRUE
+                                                                   ))
+                                                  ),
                                               box(background="green",width=12,
-                                                  h3("[Graph]"))
-                                              )),
+                                                  renderPlot("potPlot"))))
                                      ),
+                            
                             ##Tab: Kanga data EDA##
                             tabPanel("Kanga",
                                      fluidRow(
-                                       column(12,
-                                              h2("Exploratory Data Analysis"),
-                                              box(background="green",width=12, h4("_About EDA_")))),
+                                       column(12, h2("Exploratory Data Analysis"))),
                                      fluidRow(
                                        column(3,
                                               box(background="green",width=12,
@@ -189,74 +306,144 @@ dashboardPage(skin="green",
                                                                 "Mandible Length"="mandible.length",
                                                                 "Mandible Width"="mandible.width",
                                                                 "Mandible Depth"="mandible.depth",
-                                                                "Ramus Height"="ramus.height"))),
-                                              box(background="green",width=12,
-                                                  h3("[Numerical Var summaries here]")),
-                                              box(background="green",width=12, 
+                                                                "Ramus Height"="ramus.height")),
+                                                  h5(strong("Summary Stats")),
+                                                  verbatimTextOutput("rooStats"), 
                                                   selectInput(
                                                     "rooCat",
                                                     "Categorical Variables",
                                                     choices = c("Species"="species",
-                                                                "Sex"="sex"))),
-                                              box(background="green",width=12, 
-                                                  h3("[Categorical Var summaries here]"))),
+                                                                "Sex"="sex")), 
+                                                  h5(strong("Levels and Counts")),
+                                                  tableOutput("rooLevels"))),
                                        column(9,
                                               box(background="green",width=12,
-                                                  h3("[graph selection]")),
-                                              box(background="green",width=12,
-                                                  h3("[Graph]")))),
-                                     ),
-                            ##Tab: Batting data EDA##
-                            tabPanel("Batting",
-                                     fluidRow(
-                                       column(12,
-                                              h2("Exploratory Data Analysis"),
-                                              box(background="green",width=12, 
-                                                  h4("_About EDA_; 
-                                                     PlayerID factors - too many to print, var omitted completely;
-                                                     yearID - 1871-2021, 150 years, omitted in variable summaries")))),
-                                     fluidRow(
-                                       column(3,
-                                              box(background="green",width=12,
                                                   selectInput(
-                                                    "batNum",
-                                                    "Numerical Variables",
-                                                    choices = c("Games (G)"="G",
-                                                                "At Bats (AB)"="AB",
-                                                                "Runs (R)"="R",
-                                                                "Hits (H)"="H",
-                                                                "Doubles (X2B)"="X2B",
-                                                                "Triples (X3B)"="X3B",
-                                                                "Homeruns (HR)"="HR",
-                                                                "Runs Batted In (RBI)"="RBI",
-                                                                "Stolen Bases (SB)"="SB",
-                                                                "Caught Stealing (CS)"="CS",
-                                                                "Base on Balls (BB)"="BB",
-                                                                "Strikeouts (SO)"="SO",
-                                                                "Intentional Walks (IBB)"="IBB",
-                                                                "Hit by Pitch (HBP)"="HBP",
-                                                                "Sacrifice Hits (SH)"="SH",
-                                                                "Sacrifice Flies (SF)"="SF",
-                                                                "Grounded Into Double Plays (GIDP)"="GIDP"))),
+                                                    "rooGraphs",
+                                                    "Graph Selection",
+                                                    #sex, species opts for boxplots, histograms, scatterplots
+                                                    choices = c("Correlation Plot"="corrMap",
+                                                                "Basilar Length Boxplot"="baLBox",  
+                                                                "Occipitonasal Length Boxplot"="ocLBox",
+                                                                "Palate Length Boxplot"="paLBox",
+                                                                "Palate Width Boxplot"="paWBox",
+                                                                "Nasal Length Boxplot"="naLBox",
+                                                                "Nasal Width Boxplot"="naWBox",
+                                                                "Squamosal Depth Boxplot"="sqDBox",
+                                                                "Lacrymal Width Boxplot"="laWBox",
+                                                                "Zygomatic Width Boxplot"="zyWBox",
+                                                                "Orbital Width Boxplot"="orWBox",
+                                                                "Rostal Width Boxplot"="roWBox",
+                                                                "Occipital Depth Boxplot"="ocDBox",
+                                                                "Crest Width Boxplot"="crWBox",
+                                                                "Foramina Length Boxplot"="foLBox",
+                                                                "Mandible Length Boxplot"="maLBox",
+                                                                "Mandible Width Boxplot"="maWBox",
+                                                                "Mandible Depth Boxplot"="maDBox",
+                                                                "Ramus Height Boxplot"="raHBox",
+                                                                "Basilar Length Histogram"="baLHist",  
+                                                                "Occipitonasal Length Histogram"="ocLHist",
+                                                                "Palate Length Histogram"="paLHist",
+                                                                "Palate Width Histogram"="paWHist",
+                                                                "Nasal Length Histogram"="naLHist",
+                                                                "Nasal Width Histogram"="naWHist",
+                                                                "Squamosal Depth Histogram"="sqDHist",
+                                                                "Lacrymal Width Histogram"="laWHist",
+                                                                "Zygomatic Width Histogram"="zyWHist",
+                                                                "Orbital Width Histogram"="orWHist",
+                                                                "Rostal Width Histogram"="roWHist",
+                                                                "Occipital Depth Histogram"="ocDHist",
+                                                                "Crest Width Histogram"="crWHist",
+                                                                "Foramina Length Histogram"="foLHist",
+                                                                "Mandible Length Histogram"="maLHist",
+                                                                "Mandible Width Histogram"="maWHist",
+                                                                "Mandible Depth Histogram"="maDHist",
+                                                                "Ramus Height Histogram"="raHHist",
+                                                                "Species Barplot"="spBar",#sex opt
+                                                                "Sex Barplot"="seBar",    #species opt
+                                                                "Palate Length by Palate Width Scatterplot"="paLWScat",
+                                                                "Nasal Length by Nasal Width Scatterplot"="naLWScat",
+                                                                "Mandible Length by Mandible Width Scatterplot"="maLWScat",
+                                                                "Mandible Length by Mandible Depth Scatterplot"="maLDScat",
+                                                                "Mandible Width by Mandible Depth Scatterplot"="maWDScat")
+                                                    ),
+                                                  conditionalPanel("input.rooGraphs == 'baLBox' ||
+                                                                   input.rooGraphs == 'ocLBox' ||
+                                                                   input.rooGraphs == 'paLBox' ||
+                                                                   input.rooGraphs == 'paWBox' ||
+                                                                   input.rooGraphs == 'naLBox' ||
+                                                                   input.rooGraphs == 'naWBox' ||
+                                                                   input.rooGraphs == 'sqDBox' ||
+                                                                   input.rooGraphs == 'laWBox' ||
+                                                                   input.rooGraphs == 'zyWBox' ||
+                                                                   input.rooGraphs == 'orWBox' ||
+                                                                   input.rooGraphs == 'roWBox' ||
+                                                                   input.rooGraphs == 'ocDBox' ||
+                                                                   input.rooGraphs == 'crWBox' ||
+                                                                   input.rooGraphs == 'foLBox' ||
+                                                                   input.rooGraphs == 'maLBox' ||
+                                                                   input.rooGraphs == 'maWBox' ||
+                                                                   input.rooGraphs == 'maDBox' ||
+                                                                   input.rooGraphs == 'raHBox' ||
+                                                                   input.rooGraphs == 'baLHist' ||
+                                                                   input.rooGraphs == 'ocLHist' ||
+                                                                   input.rooGraphs == 'paLHist' ||
+                                                                   input.rooGraphs == 'paWHist' ||
+                                                                   input.rooGraphs == 'naLHist' ||
+                                                                   input.rooGraphs == 'naWHist' ||
+                                                                   input.rooGraphs == 'sqDHist' ||
+                                                                   input.rooGraphs == 'laWHist' ||
+                                                                   input.rooGraphs == 'zyWHist' ||
+                                                                   input.rooGraphs == 'orWHist' ||
+                                                                   input.rooGraphs == 'roWHist' ||
+                                                                   input.rooGraphs == 'ocDHist' ||
+                                                                   input.rooGraphs == 'crWHist' ||
+                                                                   input.rooGraphs == 'foLHist' ||
+                                                                   input.rooGraphs == 'maLHist' ||
+                                                                   input.rooGraphs == 'maWHist' ||
+                                                                   input.rooGraphs == 'maDHist' ||
+                                                                   input.rooGraphs == 'raHHist' ||
+                                                                   input.rooGraphs == 'paLWScat' ||
+                                                                   input.rooGraphs == 'naLWScat' ||
+                                                                   input.rooGraphs == 'maLWScat' ||
+                                                                   input.rooGraphs == 'maLDScat' ||
+                                                                   input.rooGraphs == 'maWDScat'",
+                                                                   radioButtons(
+                                                                     "rooBHS",
+                                                                     "Group by:",
+                                                                     choices = c("sex",
+                                                                                 "species",
+                                                                                 "neither"),
+                                                                     selected = "neither",
+                                                                     inline = TRUE
+                                                                   )),
+                                                  
+                                                  conditionalPanel("input.rooGraphs == 'spBar'",
+                                                                   radioButtons(
+                                                                     "speciesBar",
+                                                                     "Group by sex?",
+                                                                     choices = c("no",
+                                                                                 "yes"),
+                                                                     selected = "no",
+                                                                     inline = TRUE
+                                                                   )),
+                                                  conditionalPanel("input.rooGraphs == 'seBar'",
+                                                                   radioButtons(
+                                                                     "sexBar",
+                                                                     "Group by species?",
+                                                                     choices = c("no",
+                                                                                 "yes"),
+                                                                     selected = "no",
+                                                                     inline = TRUE
+                                                                   ))
+                                                  
+                                                  ),
                                               box(background="green",width=12,
-                                                  h3("[Numerical Var summaries here]")),
-                                              box(background="green",width=12, 
-                                                  selectInput(
-                                                    "batNum",
-                                                    "Categorical Variables",
-                                                    choices = c("Stint"="stint",
-                                                                "Team (teamID)"="teamID",
-                                                                "League (lgID)"="lgID"))),
-                                              box(background="green",width=12, 
-                                                  h3("[Categorical Var summaries here]"))),
-                                       column(9,
-                                              box(background="green",width=12,
-                                                  h3("[graph selection]")),
-                                              box(background="green",width=12,
-                                                  h3("[Graph]"))))
+                                                  renderPlot("rooPlot"))))
                                      )
                             )
                           ),
+                  
                   tabItem(tabName = "modInfo",
                           fluidRow(
                             column(12,
@@ -273,18 +460,18 @@ dashboardPage(skin="green",
                                    h3("Random Forest"),
                                    box(background="green",width=12, h4("[what is rand. forest; pros and cons]")))),
                           fluidRow(
-                            column(3,
+                            column(4,
                                    h3("Diamonds"),
-                                   box(background="green",width=12, h4("[predicting [price]; MLR/Reg Tree/Rand Forest]"))),
-                            column(3,
+                                   box(background="green",width=12, 
+                                       h4("[predicting [price]; MLR/Reg Tree/Rand Forest]"))),
+                            column(4,
                                    h3("Pottery"),
-                                   box(background="green",width=12, h4("[predicting [kiln]; GLR/Class Tree/Rand Forest]"))),
-                            column(3,
+                                   box(background="green",width=12, 
+                                       h4("[predicting [kiln]; GLR/Class Tree/Rand Forest]"))),
+                            column(4,
                                    h3("Kanga"),
-                                   box(background="green",width=12, h4("[predicting [species]; GLR/Class Tree/Rand Forest]"))),
-                            column(3,
-                                   h3("Batting"),
-                                   box(background="green",width=12, h4("[predicting [games (G)]; MLR/Reg Tree/Rand Forest]"))))
+                                   box(background="green",width=12, 
+                                       h4("[predicting [species]; GLR/Class Tree/Rand Forest]"))))
                           ),
                   tabItem(tabName = "modFit",
                           tabsetPanel(
@@ -318,7 +505,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("gemMLRFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)"))),
                                        column(4,
                                               h3("Regression Tree"),
@@ -338,7 +525,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("gemTreeFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)"))),
                                        column(4,
                                               h3("Random Forest"),
@@ -358,7 +545,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("gemForestFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)")))),
                                      fluidRow(
                                        column(2),
@@ -396,7 +583,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("potGLRFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)"))),
                                        column(4,
                                               h3("Classification Tree"),
@@ -416,7 +603,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("potTreeFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)"))),
                                        column(4,
                                               h3("Random Forest"),
@@ -436,7 +623,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("potForestFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)")))),
                                      fluidRow(
                                        column(2),
@@ -484,7 +671,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("rooGLRFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)"))),
                                        column(4,
                                               h3("Classification Tree"),
@@ -514,7 +701,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("rooTreeFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)"))),
                                        column(4,
                                               h3("Random Forest"),
@@ -544,118 +731,7 @@ dashboardPage(skin="green",
                                                   ),
                                                   actionButton("rooForestFit",
                                                                "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)")))),
-                                     fluidRow(
-                                       column(2),
-                                       column(8, box(background="green",width=12, 
-                                                     h3("[about fit criteria, RMSE in particular]"))),
-                                       column(2))
-                                     ),
-                            ##Tab: Batting modeling##
-                            tabPanel("Batting",
-                                     fluidRow(
-                                       column(12,
-                                              box(background="green",width=12, 
-                                                  numericInput("batTrainProp",
-                                                               "Proportion of Training Data",
-                                                               value = 0.7,
-                                                               min = 0.5,
-                                                               max = 0.85,
-                                                               step = 0.01)))),
-                                     fluidRow(
-                                       column(4,
-                                              h3("Multiple Linear Regression Model"),
-                                              box(background="green",width=12, 
-                                                  checkboxGroupInput(
-                                                    "batMLRVars",
-                                                    "Variable Selection",
-                                                    choices = c("yearID",
-                                                                "stint",
-                                                                "teamID",
-                                                                "lgID",
-                                                                "AB",
-                                                                "R",
-                                                                "H",
-                                                                "X2B",
-                                                                "X3B",
-                                                                "HR",
-                                                                "RBI",
-                                                                "SB",
-                                                                "CS",
-                                                                "BB",
-                                                                "SO",
-                                                                "IBB",
-                                                                "HBP",
-                                                                "SH",
-                                                                "SF",
-                                                                "GIDP")
-                                                  ),
-                                                  actionButton("batMLRFit",
-                                                               "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
-                                       column(4,
-                                              h3("Regression Tree"),
-                                              box(background="green",width=12, 
-                                                  checkboxGroupInput(
-                                                    "batTreeVars",
-                                                    "Variable Selection",
-                                                    choices = c("yearID",
-                                                                "stint",
-                                                                "teamID",
-                                                                "lgID",
-                                                                "AB",
-                                                                "R",
-                                                                "H",
-                                                                "X2B",
-                                                                "X3B",
-                                                                "HR",
-                                                                "RBI",
-                                                                "SB",
-                                                                "CS",
-                                                                "BB",
-                                                                "SO",
-                                                                "IBB",
-                                                                "HBP",
-                                                                "SH",
-                                                                "SF",
-                                                                "GIDP")
-                                                  ),
-                                                  actionButton("batTreeFit",
-                                                               "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
-                                                  h4("graph fit (maybe)"))),
-                                       column(4,
-                                              h3("Random Forest"),
-                                              box(background="green",width=12, 
-                                                  checkboxGroupInput(
-                                                    "batForestVars",
-                                                    "Variable Selection",
-                                                    choices = c("yearID",
-                                                                "stint",
-                                                                "teamID",
-                                                                "lgID",
-                                                                "AB",
-                                                                "R",
-                                                                "H",
-                                                                "X2B",
-                                                                "X3B",
-                                                                "HR",
-                                                                "RBI",
-                                                                "SB",
-                                                                "CS",
-                                                                "BB",
-                                                                "SO",
-                                                                "IBB",
-                                                                "HBP",
-                                                                "SH",
-                                                                "SF",
-                                                                "GIDP")
-                                                  ),
-                                                  actionButton("batForestFit",
-                                                               "Fit model"),
-                                                  h4("[conditional: model summary info generated after button hit]"),
+                                                  h4("[model summary info generated after button hit]"),
                                                   h4("graph fit (maybe)")))),
                                      fluidRow(
                                        column(2),
@@ -704,7 +780,8 @@ dashboardPage(skin="green",
                                               box(background="green",width=12, 
                                                   h3("conditional: appear after predict button pushed"),
                                                   h3("display model + summary"),
-                                                  h3("display prediction value"))))),
+                                                  h3("display prediction value"))))
+                                     ),
                             ##Tab: Kanga prediction##
                             tabPanel("Kanga",
                                      fluidRow(
@@ -721,24 +798,8 @@ dashboardPage(skin="green",
                                               box(background="green",width=12, 
                                                   h3("conditional: appear after predict button pushed"),
                                                   h3("display model + summary"),
-                                                  h3("display prediction value"))))),
-                            ##Tab: Batting prediction##
-                            tabPanel("Batting",
-                                     fluidRow(
-                                       column(12,
-                                              box(background="green",width=12, 
-                                                  h3("[Directions]")))),
-                                     fluidRow(
-                                       column(5,
-                                              box(background="green",width=12, 
-                                                  h3("predictor selection"),
-                                                  h3("predictor value input"),
-                                                  h3("[Predict] button (may move to other box)"))),
-                                       column(7,
-                                              box(background="green",width=12, 
-                                                  h3("conditional: appear after predict button pushed"),
-                                                  h3("display model + summary"),
-                                                  h3("display prediction value")))))
+                                                  h3("display prediction value"))))
+                                     )
                             )
                           ),
                   tabItem(tabName = "data",
@@ -789,28 +850,6 @@ dashboardPage(skin="green",
                                      ),
                             ##Tab: Kanga dataset##
                             tabPanel("Kanga",
-                                     fluidRow(
-                                       column(5,
-                                              h2("Subset Data"),
-                                              box(background="green",width=12,
-                                                  h3("[subsetting section]"),
-                                                  h3("select vars (columns)"),
-                                                  h3("filter rows - select var, select value(s)"))),
-                                       column(7,
-                                              h2("Data Table"),
-                                              box(background="green",width=12, 
-                                                  h3("display data/subsetted data")))
-                                     ),
-                                     fluidRow(
-                                       column(4),
-                                       column(4,
-                                              align = "center",
-                                              box(background="green",width=12,
-                                                  h3("[button to download the current data displayed]"))),
-                                       column(4))
-                                     ),
-                            ##Tab: Batting dataset##
-                            tabPanel("Batting",
                                      fluidRow(
                                        column(5,
                                               h2("Subset Data"),
