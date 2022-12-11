@@ -9,6 +9,7 @@ library(tree)         #for modeling regression/classification trees
 library(randomForest) #for modeling random forest models
 library(HSAUR3)       #for pottery data
 library(faraway)      #for kanga data
+
 #load datasets
 data("diamonds")
 data("pottery", package = "HSAUR3")
@@ -520,294 +521,294 @@ shinyServer(function(input, output, session) {
     
     #boxplots
     else if(input$rooGraphs=="baLBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(basilar.length))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(basilar.length, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(basilar.length, color=species))}
     }
     else if(input$rooGraphs=="ocLBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(occipitonasal.length))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(occipitonasal.length, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(occipitonasal.length, color=species))}
     }
     else if(input$rooGraphs=="paLBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(palate.length))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(palate.length, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(palate.length, color=species))}
     }
     else if(input$rooGraphs=="paWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(palate.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(palate.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(palate.width, color=species))}
     }
     else if(input$rooGraphs=="naLBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(nasal.length))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(nasal.length, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(nasal.length, color=species))}
     }
     else if(input$rooGraphs=="naWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(nasal.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(nasal.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(nasal.width, color=species))}
     }
     else if(input$rooGraphs=="sqDBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(squamosal.depth))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(squamosal.depth, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(squamosal.depth, color=species))}
     }
     else if(input$rooGraphs=="laWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(lacrymal.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(lacrymal.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(lacrymal.width, color=species))}
     }
     else if(input$rooGraphs=="zyWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(zygomatic.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(zygomatic.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(zygomatic.width, color=species))}
     }
     else if(input$rooGraphs=="orWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(orbital.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(orbital.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(orbital.width, color=species))}
     }
     else if(input$rooGraphs=="roWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(.rostral.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(.rostral.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(.rostral.width, color=species))}
     }
     else if(input$rooGraphs=="ocDBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(occipital.depth))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(occipital.depth, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(occipital.depth, color=species))}
     }
     else if(input$rooGraphs=="crWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(crest.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(crest.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(crest.width, color=species))}
     }
     else if(input$rooGraphs=="foLBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(foramina.length))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(foramina.length, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(foramina.length, color=species))}
     }
     else if(input$rooGraphs=="maLBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(mandible.length))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(mandible.length, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(mandible.length, color=species))}
     }
     else if(input$rooGraphs=="maWBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(mandible.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(mandible.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(mandible.width, color=species))}
     }
     else if(input$rooGraphs=="maDBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(mandible.depth))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(mandible.depth, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(mandible.depth, color=species))}
     }
     else if(input$rooGraphs=="raHBox"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_boxplot(aes(ramus.height))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_boxplot(aes(ramus.height, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_boxplot(aes(ramus.height, color=species))}
     }
     
     #histograms
     else if(input$rooGraphs=="baLHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(basilar.length))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(basilar.length, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(basilar.length, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(basilar.length, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(basilar.length, fill=species))}
     }
     else if(input$rooGraphs=="ocLHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(occipitonasal.length))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(occipitonasal.length, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(occipitonasal.length, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(occipitonasal.length, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(occipitonasal.length, fill=species))}
     }
     else if(input$rooGraphs=="paLHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(palate.length))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(palate.length, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(palate.length, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(palate.length, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(palate.length, fill=species))}
     }
     else if(input$rooGraphs=="paWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(palate.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(palate.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(palate.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(palate.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(palate.width, fill=species))}
     }
     else if(input$rooGraphs=="naLHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(nasal.length))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(nasal.length, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(nasal.length, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(nasal.length, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(nasal.length, fill=species))}
     }
     else if(input$rooGraphs=="naWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(nasal.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(nasal.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(nasal.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(nasal.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(nasal.width, fill=species))}
     }
     else if(input$rooGraphs=="sqDHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(squamosal.depth))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(squamosal.depth, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(squamosal.depth, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(squamosal.depth, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(squamosal.depth, fill=species))}
     }
     else if(input$rooGraphs=="laWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(lacrymal.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(lacrymal.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(lacrymal.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(lacrymal.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(lacrymal.width, fill=species))}
     }
     else if(input$rooGraphs=="zyWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(zygomatic.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(zygomatic.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(zygomatic.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(zygomatic.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(zygomatic.width, fill=species))}
     }
     else if(input$rooGraphs=="orWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(orbital.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(orbital.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(orbital.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(orbital.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(orbital.width, fill=species))}
     }
     else if(input$rooGraphs=="roWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(.rostral.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(.rostral.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(.rostral.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(.rostral.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(.rostral.width, fill=species))}
     }
     else if(input$rooGraphs=="ocDHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(occipital.depth))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(occipital.depth, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(occipital.depth, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(occipital.depth, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(occipital.depth, fill=species))}
     }
     else if(input$rooGraphs=="crWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(crest.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(crest.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(crest.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(crest.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(crest.width, fill=species))}
     }
     else if(input$rooGraphs=="foLHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(foramina.length))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(foramina.length, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(foramina.length, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(foramina.length, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(foramina.length, fill=species))}
     }
     else if(input$rooGraphs=="maLHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(mandible.length))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(mandible.length, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(mandible.length, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(mandible.length, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(mandible.length, fill=species))}
     }
     else if(input$rooGraphs=="maWHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(mandible.width))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(mandible.width, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(mandible.width, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(mandible.width, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(mandible.width, fill=species))}
     }
     else if(input$rooGraphs=="maDHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(mandible.depth))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(mandible.depth, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(mandible.depth, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(mandible.depth, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(mandible.depth, fill=species))}
     }
     else if(input$rooGraphs=="raHHist"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_histogram(aes(ramus.height))}
-      else if(input$opt=="sex"){
-        kan+geom_histogram(aes(ramus.height, color=sex))}
-      else if(input$opt=="species"){
-        kan+geom_histogram(aes(ramus.height, color=species))}
+      else if(input$rooBHS=="sex"){
+        kan+geom_histogram(aes(ramus.height, fill=sex))}
+      else if(input$rooBHS=="species"){
+        kan+geom_histogram(aes(ramus.height, fill=species))}
     }
     
     #barplots
@@ -826,43 +827,43 @@ shinyServer(function(input, output, session) {
     
     #scatterplots
     else if(input$rooGraphs=="paLWScat"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_point(aes(palate.length, palate.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_point(aes(palate.length, palate.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_point(aes(palate.length, palate.width, color=species))}
     }
     else if(input$rooGraphs=="naLWScat"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_point(aes(nasal.length, nasal.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_point(aes(nasal.length, nasal.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_point(aes(nasal.length, nasal.width, color=species))}
     }
     else if(input$rooGraphs=="maLWScat"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_point(aes(mandible.length, mandible.width))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_point(aes(mandible.length, mandible.width, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_point(aes(mandible.length, mandible.width, color=species))}
     }
     else if(input$rooGraphs=="maLDScat"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_point(aes(mandible.length, mandible.depth))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_point(aes(mandible.length, mandible.depth, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_point(aes(mandible.length, mandible.depth, color=species))}
     }
     else if(input$rooGraphs=="maWDScat"){
-      if(input$opt=="neither"){
+      if(input$rooBHS=="neither"){
         kan+geom_point(aes(mandible.width, mandible.depth))}
-      else if(input$opt=="sex"){
+      else if(input$rooBHS=="sex"){
         kan+geom_point(aes(mandible.width, mandible.depth, color=sex))}
-      else if(input$opt=="species"){
+      else if(input$rooBHS=="species"){
         kan+geom_point(aes(mandible.width, mandible.depth, color=species))}
     }
   })
@@ -933,7 +934,7 @@ shinyServer(function(input, output, session) {
     rfPred <- predict(rfmod, newdata = rooTestDat)
     
     #classification rate
-    class <- table(potTestDat$kiln, rfPred)
+    class <- table(rooTestDat$species, rfPred)
     missclassRate <- 1-(sum(diag(class))/sum(class))
     
     #output

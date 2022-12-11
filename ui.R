@@ -8,6 +8,7 @@ library(tree)         #for modeling regression/classification trees
 library(randomForest) #for modeling random forest models
 library(HSAUR3)       #for pottery data
 library(faraway)      #for kanga data
+
 #load datasets
 data("diamonds")
 data("pottery", package = "HSAUR3")
@@ -278,7 +279,7 @@ dashboardPage(skin="green",
                                                                    ))
                                                   ),
                                               box(background="green",width=12,
-                                                  renderPlot("potPlot"))))
+                                                  plotOutput("potPlot"))))
                                      ),
                             
                             ##Tab: Kanga data EDA##
@@ -441,7 +442,7 @@ dashboardPage(skin="green",
                                                   
                                                   ),
                                               box(background="green",width=12,
-                                                  renderPlot("rooPlot"))))
+                                                  plotOutput("rooPlot"))))
                                      )
                             )
                           ),
@@ -548,8 +549,9 @@ dashboardPage(skin="green",
                                                   verbatimTextOutput("gemRand")))),
                                      fluidRow(
                                        column(2),
-                                       column(8, box(background="green",width=12, 
-                                                     h3("[about fit criteria, RMSE in particular]"))),
+                                       column(8, 
+                                              box(background="green",width=12, 
+                                              h4("The best fitting model has the lowest root mean square error (RMSE)."))),
                                        column(2))
                                      ),
                             ##Tab: Pottery modeling##
@@ -623,8 +625,9 @@ dashboardPage(skin="green",
                                                   verbatimTextOutput("potRand")))),
                                      fluidRow(
                                        column(2),
-                                       column(8, box(background="green",width=12, 
-                                                     h3("[about fit criteria, RMSE in particular]"))),
+                                       column(8, 
+                                              box(background="green",width=12, 
+                                              h4("The best fitting model has the lowest misclassification error rate."))),
                                        column(2))
                                      ),
                             ##Tab: Kanga modeling##
@@ -728,15 +731,14 @@ dashboardPage(skin="green",
                                                   verbatimTextOutput("rooRand")))),
                                      fluidRow(
                                        column(2),
-                                       column(8, box(background="green",width=12, 
-                                                     h3("[about fit criteria, RMSE in particular]"))),
+                                       column(8, 
+                                              box(background="green",width=12, 
+                                              h4("The best fitting model has the lowest misclassification error rate."))),
                                        column(2))
                                      )
                             )
                           ),
-              #######################################################################
-              ## May adjust var and value input, reduce size of prediction section ##
-              #######################################################################
+
                   tabItem(tabName = "modPred",
                           tabsetPanel(
                             ##Tab: Diamonds prediction##
@@ -749,12 +751,15 @@ dashboardPage(skin="green",
                                      fluidRow(
                                        column(5,
                                               box(background="green",width=12, 
-                                                  h3("model selection"),
-                                                  h3("predictor value input"),
-                                                  h3("[Predict] button"))),
+                                                  selectInput("gemSelect",
+                                                              "Select Model",
+                                                              choices = c("Multiple Linear Regression"="mlr",
+                                                                          "Regression Tree"="regtr",
+                                                                          "Random Forest"="rf")
+                                                  ),
+                                                  h3("predictor value input"))),
                                        column(7,
                                               box(background="green",width=12, 
-                                                  h3("conditional: appear after predict button pushed"),
                                                   h3("display model + summary"),
                                                   h3("display prediction"))))
                                      ),
@@ -768,12 +773,15 @@ dashboardPage(skin="green",
                                      fluidRow(
                                        column(5,
                                               box(background="green",width=12, 
-                                                  h3("model selection"),
-                                                  h3("predictor value input"),
-                                                  h3("[Predict] button"))),
+                                                  selectInput("potSelect",
+                                                              "Select Model",
+                                                              choices = c("Generalized Linear Regression"="glr",
+                                                                          "Classification Tree"="classtr",
+                                                                          "Random Forest"="rf")
+                                                  ),
+                                                  h3("predictor value input"))),
                                        column(7,
-                                              box(background="green",width=12, 
-                                                  h3("conditional: appear after predict button pushed"),
+                                              box(background="green",width=12,
                                                   h3("display model + summary"),
                                                   h3("display prediction"))))
                                      ),
@@ -787,12 +795,15 @@ dashboardPage(skin="green",
                                      fluidRow(
                                        column(5,
                                               box(background="green",width=12, 
-                                                  h3("model selection"),
-                                                  h3("predictor value input"),
-                                                  h3("[Predict] button"))),
+                                                  selectInput("rooSelect",
+                                                              "Select Model",
+                                                              choices = c("Generalized Linear Regression"="glr",
+                                                                          "Classification Tree"="classtr",
+                                                                          "Random Forest"="rf")
+                                                  ),
+                                                  h3("predictor value input"))),
                                        column(7,
-                                              box(background="green",width=12, 
-                                                  h3("conditional: appear after predict button pushed"),
+                                              box(background="green",width=12,
                                                   h3("display model + summary"),
                                                   h3("display prediction"))))
                                      )
@@ -850,6 +861,7 @@ dashboardPage(skin="green",
                                        column(5,
                                               h2("Subset Data"),
                                               box(background="green",width=12,
+                                                  h3("choose between original data and already filtered data"),
                                                   h3("[subsetting section]"),
                                                   h3("select vars (columns)"),
                                                   h3("filter rows - select var, select value(s)"))),
