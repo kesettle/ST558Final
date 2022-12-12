@@ -279,6 +279,58 @@ shinyServer(function(input, output, session) {
   })
   
   
+  ## Prediction
+  #models
+  output$gemPred <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    
+    #Training/Testing Data
+    train <- sample(1:nrow(diamonds), size = nrow(diamonds)*input$gemTrain)
+    gemTrainDat <- diamonds[train,]
+    gemTestDat <- diamonds[-train,]
+    
+    #fit linear mod
+    lmod <- train(reformulate(input$gemMLRVars, "price"),
+                  data=gemTrainDat,
+                  method = "lm",
+                  trControl = trainControl("cv",number=10))
+    #fit tree
+    treemod <- tree(reformulate(input$gemTreeVars, "price"),
+                    data = gemTrainDat)
+    #fit rand. forest
+    rfmod <- randomForest(reformulate(input$gemForestVars, "price"), 
+                          data = gemTrainDat, 
+                          mtry = 1,
+                          ntree = 100, 
+                          importance = TRUE)
+    
+    #create prediction data from user input
+    gemPredDat <- data.frame(carat=input$caratIn, cut=as.factor(input$cutIn), color=as.factor(input$colorIn), 
+                             clarity=as.factor(input$clarIn), x=input$xIn, y=input$yIn, z=input$zIn, 
+                             depth=input$depthIn, table=input$tableIn)
+    
+    
+    #Output options - Predict with user input
+    if(input$gemSelect=="mlr"){
+      predict(lmod, newdata = gemPredDat)
+    }
+    else if(input$gemSelect=="regtr"){
+      predict(treemod, newdata = gemPredDat)
+    }
+    else if(input$gemSelect=="rf"){
+      predict(rfmod, newdata = gemPredDat)
+    }
+    
+  })
+  
+  
+  ## Download data
+  output$gemSubDat <- renderDataTable(diamonds[ ,c(input$gemSubVars), drop=FALSE])
+  
+  
+  output$gemSave <- downloadHandler(filename = "diamonds.csv",
+                                    content = write.csv(diamonds[ ,c(input$gemSubVars), drop=FALSE], "diamonds.csv"))
   
   
   
@@ -493,6 +545,58 @@ shinyServer(function(input, output, session) {
       "Missclassification_Error_Rate"=missclassRate
     )
   })
+  
+  
+
+  ## Prediction
+  #models
+  output$potPred <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+    
+    #Training/Testing Data
+    train <- sample(1:nrow(pottery), size = nrow(pottery)*input$potTrain)
+    potTrainDat <- pottery[train,]
+    potTestDat <- pottery[-train,]
+    
+    #fit
+    lmod <- multinom(reformulate(input$potGLRVars, "kiln"),
+                     data=potTrainDat)
+    #fit tree
+    treemod <- tree(reformulate(input$potTreeVars, "kiln"),
+                    data = potTrainDat)
+    #fit rand. forest
+    rfmod <- randomForest(reformulate(input$potForestVars, "kiln"), 
+                          data = potTrainDat, 
+                          mtry = 1,
+                          ntree = 100, 
+                          importance = TRUE)
+    
+    #create prediction data from user input
+    potPredDat <- data.frame(Al2O3=input$alumtriIn, Fe2O3=input$irontriIn, MgO=input$magoxIn, 
+                             CaO=input$calcoxIn, Na2O=input$natoxIn, K2O=input$calioxIn, 
+                             TiO2=input$titoxIn, MnO=input$manganoxIn, BaO=input$baroxIn)
+    
+    
+    #Output options - Predict with user input
+    if(input$potSelect=="glr"){
+      predict(lmod, newdata = potPredDat)
+    }
+    else if(input$potSelect=="classtr"){
+      predict(treemod, newdata = potPredDat)
+    }
+    else if(input$potSelect=="rf"){
+      predict(rfmod, newdata = potPredDat)
+    }
+    
+  })
+  
+  ## Download data
+  output$potSubDat <- renderDataTable(pottery[ ,c(input$potSubVars), drop=FALSE])
+  
+  
+  output$potSave <- downloadHandler(filename = "pottery.csv",
+                                    content = write.csv(pottery[ ,c(input$potSubVars), drop=FALSE], "pottery.csv"))
   
   
   
@@ -945,6 +1049,58 @@ shinyServer(function(input, output, session) {
     )
   })
   
+  ## Prediction
+  #models
+  output$rooPred <- renderPrint({
+    #set seed for reproduction purposes
+    set.seed(17)
+
+    #Training/Testing Data
+    train <- sample(1:nrow(roo), size = nrow(roo)*input$rooTrain)
+    rooTrainDat <- roo[train,]
+    rooTestDat <- roo[-train,]
+    
+    #fit linear mod
+    lmod <- multinom(reformulate(input$rooGLRVars, "species"),
+                     data=rooTrainDat)
+    #fit tree
+    treemod <- tree(reformulate(input$rooTreeVars, "species"),
+                    data = rooTrainDat)
+    #fit rand. forest
+    rfmod <- randomForest(reformulate(input$rooForestVars, "species"), 
+                          data = rooTrainDat, 
+                          mtry = 1,
+                          ntree = 100, 
+                          importance = TRUE)
+    
+    #create prediction data from user input
+    rooPredDat <- data.frame(sex=as.factor(input$sexIn), basilar.length=input$balIn, occipitonasal.length=input$oclIn,
+                             palate.length=input$palIn, palate.width=input$pawIn, nasal.length=input$nalIn,
+                             nasal.width=input$nawIn, squamosal.depth=input$sqdIn, lacrymal.width=input$lawIn,
+                             zygomatic.width=input$zywIn, orbital.width=input$orwIn, .rostral.width=input$rowIn,
+                             occipital.depth=input$ocdIn, crest.width=input$crwIn, foramina.length=input$folIn,
+                             mandible.length=input$malIn, mandible.width=input$mawIn, mandible.depth=input$madIn,
+                             ramus.height=input$rahIn)
+    
+    #Output options - Predict with user input
+    if(input$rooSelect=="glr"){
+      predict(lmod, newdata = rooPredDat)
+    }
+    else if(input$rooSelect=="classtr"){
+      predict(treemod, newdata = rooPredDat)
+    }
+    else if(input$rooSelect=="rf"){
+      predict(rfmod, newdata = rooPredDat)
+    }
+    
+  })
   
+  
+  ## Download data
+  output$rooSubDat <- renderDataTable(kanga[ ,c(input$rooSubVars), drop=FALSE])
+  
+  
+  output$rooSave <- downloadHandler(filename = "kangaroo.csv",
+                                    content = write.csv(kanga[ ,c(input$rooSubVars), drop=FALSE], "kanga.csv"))
   
 })
