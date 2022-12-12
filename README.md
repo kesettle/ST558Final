@@ -18,6 +18,7 @@ The following packages are used to run the app:
 - `tidyverse` - used for data manipulation, graphing, and to access the `diamonds` data
 - `corrplot` - used to create correlation plots
 - `caret` - used for modeling and predicting
+- `nnet` - used for modeling
 - `tree` - used for modeling
 - `randomForest` - used for modeling
 - `HSAUR3` - used to access the `pottery` data
@@ -27,7 +28,7 @@ The following packages are used to run the app:
 Use the following code to install the packages if you do not have them or do not have all of them:
 
 ```{r}
-install.packages(c("shiny", "shinydashboard", "DT", "tidyverse", "corrplot", "caret", "tree", "randomForest", "HSAUR3", "faraway"))
+install.packages(c("shiny", "shinydashboard", "DT", "tidyverse", "corrplot", "caret", "nnet", "tree", "randomForest", "HSAUR3", "faraway"))
 ```
 
 ## Run Away!
